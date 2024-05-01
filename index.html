@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Play Planner</title>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/pwa-group-02/styles.css">
+    <link rel="manifest" href="/pwa-group-02/manifest.json">
 </head>
 <body>
 <header>
@@ -16,7 +16,7 @@
 
 <script>
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('/pwa-group-02/service-worker.js')
             .then(function(registration) {
                 console.log('Service Worker registered with scope:', registration.scope);
             })

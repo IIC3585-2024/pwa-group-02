@@ -1,6 +1,6 @@
 const staticAssets = [
-    './',
-    './styles.css',
+    './pwa-group-02/',
+    './pwa-group-02/styles.css',
 ];
 
 self.addEventListener('install', async event => {
