@@ -1,7 +1,7 @@
 {
     "name": "Play Planner",
     "short_name": "pp",
-    "start_url": "/?home=true",
+    "start_url": "/pwa-group-02/",
     "icons": [
         {
           "src": "icons/manifest-icon-144.maskable.png",
