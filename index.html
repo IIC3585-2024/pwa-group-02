@@ -1,30 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+<!-- Sacado de https://www.youtube.com/watch?v=3OqWCGVaOkA y https://www.w3schools.com/howto/howto_css_switch.asp -->
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <script src="./script.js" defer></script>
     <title>Play Planner</title>
-    <link rel="stylesheet" href="/pwa-group-02/styles.css">
     <link rel="manifest" href="/pwa-group-02/manifest.json">
 </head>
+
 <body>
-<header>
-    <h1 class="center">PWA</h1>
-</header>
-<main>
-    <div class="container"></div>
-</main>
+    <header class="header">
+        <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider round"></span>
+        </label>
+        <img src="./icons/apple-icon-180.png" alt="logo" />
+    </header>
 
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/pwa-group-02/service-worker.js')
-            .then(function(registration) {
-                console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch(function(error) {
-                console.error('Service Worker registration failed:', error);
-            });
-    }
-</script>
 
+    <section class="todo">
+        <h2>What Song Is Next?</h2>
+        <div class="input">
+            <input type="text" class="input-field" id="todoInput" placeholder="Add a new todo" />
+            <button class="btn">Add</button>
+        </div>
+        <ul class="scroll" id="scroll">
+            <li id="todoList"></li>
+        </ul>
+
+        <div id="additional-info">
+            <!-- <h3>Song Name</h3>
+            <p id="song"></p>
+            <h3>Artist</h3>
+            <p id="artist"></p>
+            <h3>Album</h3>
+            <p id="album"></p> -->
+        </div>
+
+        <div>
+            <hr class="counter" />
+            <div class="counter-container">
+                <p><span id="todoCount">0</span> items total</p>
+                <button id="backButton">Volver</button>
+                <button id="deleteButton">Delete All</button>
+                
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/pwa-group-02/service-worker.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+    </script>
 </body>
+
 </html>
+

@@ -68,8 +68,6 @@ function displayTasks() {
     todoCount.textContent = todo.length;
 }
 
-
-
 function editTask(index) {
     document.getElementById("additional-info").style.display = "block";
     document.getElementById("scroll").style.display = "none";
@@ -139,8 +137,6 @@ function editTask(index) {
         displayTasks();
     });
 }
-
-
 
 function toggleTask(index) {
     todo[index].disabled = !todo[index].disabled;
