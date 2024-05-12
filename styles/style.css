@@ -51,7 +51,8 @@ p {
 /* Todo Container */
 
 .todo {
-    display: flex;
+    display: none;
+    /* display: flex; */
     flex-direction: column;
     margin: 0 auto;
     justify-content: space-around;
@@ -63,6 +64,11 @@ p {
     box-shadow: 0 1rem 3rem 1rem rgba(0, 23, 71, 0.15);
     max-width: 30rem;
 }
+
+#listOfTodos {
+    display: flex;
+}
+
 
 h2 {
     text-transform: uppercase;
