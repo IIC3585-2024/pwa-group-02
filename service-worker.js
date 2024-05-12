@@ -1,9 +1,9 @@
 const staticCacheName = 'static-play-planner';
 const staticAssets = [
     './',
-    './index.html',
-    './script.js',
-    './styles/styles.css',
+    // './index.html',
+    // './script.js',
+    // './styles/styles.css',
 ];
 
 self.addEventListener('install', event => {
