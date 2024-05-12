@@ -19,24 +19,27 @@
         <img src="./icons/apple-icon-180.png" alt="logo" />
     </header>
 
-
-    <section class="todo">
+    <section class="todo" id="listOfTodos">
         <h2>What Song Is Next?</h2>
         <div class="input">
+            <input type="text" class="input-field" id="listOfTodosInput" placeholder="Add a list" />
+            <button class="btn" id="addListOfTodosButton">Add</button>
+        </div>
+
+        <div></div>
+    </section>
+
+    <section class="todo" id="todo">
+        <h2 id="titleToDo">What Song Is Next?</h2>
+        <div class="input">
             <input type="text" class="input-field" id="todoInput" placeholder="Add a new todo" />
-            <button class="btn">Add</button>
+            <button class="btn" id="addButton">Add</button>
         </div>
         <ul class="scroll" id="scroll">
             <li id="todoList"></li>
         </ul>
 
         <div id="additional-info">
-            <!-- <h3>Song Name</h3>
-            <p id="song"></p>
-            <h3>Artist</h3>
-            <p id="artist"></p>
-            <h3>Album</h3>
-            <p id="album"></p> -->
         </div>
 
         <div>
@@ -44,6 +47,7 @@
             <div class="counter-container">
                 <p><span id="todoCount">0</span> items total</p>
                 <button id="backButton">Volver</button>
+                <button id="newListButton">Crear Nueva Lista</button>
                 <button id="deleteButton">Delete All</button>
                 
 
