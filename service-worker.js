@@ -1,11 +1,16 @@
+const staticCacheName = 'static-play-planner';
 const staticAssets = [
-    './pwa-group-02/',
-    './pwa-group-02/styles.css',
+    '/pwa-group-02/',
+    '/pwa-group-02/styles/styles.css',
 ];
 
-self.addEventListener('install', async event => {
-    const cache = await caches.open('static-play-planner');
-    cache.addAll(staticAssets);
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(staticCacheName).then(cache => {
+      console.log('caching assets')
+      cache.addAll(staticAssets);
+   })
+  );
 });
 
 self.addEventListener('fetch', event => {
