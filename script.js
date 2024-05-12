@@ -1,5 +1,9 @@
 // Retrieve todo from local storage or initialize an empty array
 // localStorage.setItem("listTodos", JSON.stringify({}));
+import { openDB, createSongList, createSong, getSongList, updateSongList, deleteSongList, updateSong, deleteAllSongLists, deleteAllSongs } from "./db.js";
+
+let indexedDB = await openDB();
+
 let listTodos = JSON.parse(localStorage.getItem("listTodos")) || {};
 let actualList = localStorage.getItem("actualList") || "";
 let todo;
@@ -28,11 +32,11 @@ const addListOfTodosButton = document.getElementById("addListOfTodosButton");
 
 // Initialize
 document.addEventListener("DOMContentLoaded", function () {
-    addButton.addEventListener("click", addTask);
+    addButton.addEventListener("click", addSong);
     todoInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
             event.preventDefault(); // Prevents default Enter key behavior
-            addTask();
+            addSong();
         }
     });
 
@@ -48,82 +52,58 @@ document.addEventListener("DOMContentLoaded", function () {
     deleteButton.addEventListener("click", deleteAllTasks);
     backButton.addEventListener("click", changeDisplayElements);
     newListButton.addEventListener("click", changeDisplayForNewList);
-    // artistButton.addEventListener("click", editArtist);
     
 
     displayTasks();
 });
 
-function changeDisplayForNewList(){
+export function changeDisplayForNewList(){
     document.getElementById("listOfTodos").style.display = "flex";
     document.getElementById("todo").style.display = "none";
 }
 
-function changeDisplayElements() {
+export function changeDisplayElements() {
     const displayElement = document.getElementById("additional-info");
     if (displayElement.style.display === "block") {
         displayElement.style.display = "none";
         document.getElementById("scroll").style.display = "block";
         document.getElementById("backButton").style.display = "none";
-        
-        
     }
     console.log("changed display");
 
-
 }
 
-function addTask() {
-    const newTask = todoInput.value.trim();
-    if (newTask !== "") {
-        console.log(todo);
-        todo.push({ song: newTask, disabled: false, artist: "", album: ""});
-        saveToLocalStorage();
+export function addList() {
+    const listName = listOfTodosInput.value.trim();
+    if (listName !== "") {
+        if (getSongList(indexedDB, listName) === undefined) {
+            createSongList(indexedDB, listName); 
+        }
+        actualList = listName;
+        todo = getSongList(indexedDB, listName)
+        listOfTodosInput.value = "";
+        displayTasks();
+    }
+}
+
+
+export function addSong() {
+    const newSong = todoInput.value.trim();
+    if (newSong !== "") {
+        let song = { song: newSong, disabled: false, artist: "", album: "" }
+        createSong(indexedDB, actualList, song);
         todoInput.value = "";
         displayTasks();
     }
 }
 
 
-function addList() {
-    const newTask = listOfTodosInput.value.trim();
-    
-    if (newTask !== "") {
-        if (listTodos[newTask] === undefined) {
-            listTodos[newTask] = [];
-        }
-        actualList = newTask;
-        todo = listTodos[actualList];
-
-        console.log("newTask", newTask);
-        console.log(actualList);
-        // localStorage.setItem("todo", JSON.stringify(listTodos[actualList]));
-        saveListToLocalStorage();
-        
-        
-        
-        listOfTodosInput.value = "";
-        
-
-        displayTasks();
-
-
-    }
-}
-
-function saveListToLocalStorage() {
-    
-    // 
-    localStorage.setItem("todo", JSON.stringify(listTodos[actualList]));
-    localStorage.setItem("actualList", actualList);
-}
-
-function displayTasks() {
-    titleToDo.textContent = actualList;
+export function vanishCreateListAndShowTodo(){
     document.getElementById("listOfTodos").style.display = "none";
     document.getElementById("todo").style.display = "flex";
+}
 
-    console.log(listTodos);
+export function displayTodo(){
     todoList.innerHTML = "";
     todo.forEach((item, index) => {
         const p = document.createElement("p");
@@ -140,10 +120,21 @@ function displayTasks() {
         );
         todoList.appendChild(p);
     });
+}
+
+
+export function displayTasks() {
+    todo = getSongList(indexedDB, listName)
+    titleToDo.textContent = actualList; // Display nombre como titulo
+    vanishCreateListAndShowTodo();
+    displayTodo();
     todoCount.textContent = todo.length;
 }
 
-function editTask(index) {
+
+
+
+export function editTask(index) {
     document.getElementById("additional-info").style.display = "block";
     document.getElementById("scroll").style.display = "none";
     document.getElementById("backButton").style.display = "block";
@@ -158,11 +149,12 @@ function editTask(index) {
                 `;
 
 
+
     const existingName = todo[index].song;
     const existingArtist = todo[index].artist;
     const existingAlbum = todo[index].album;
 
-    console.log(existingName, existingArtist, existingAlbum);
+
 
     const inputName = document.createElement("input");
     const inputArtist = document.createElement("input");
@@ -182,13 +174,17 @@ function editTask(index) {
     album.replaceWith(inputAlbum);
     artist.replaceWith(inputArtist);
 
-
+    let editedSong;
 
     inputAlbum.addEventListener("blur", function () {
         const updatedText = inputAlbum.value.trim();
         if (updatedText) {
+            ///
             todo[index].album = updatedText;
-            saveToLocalStorage();
+            editedSong = todo[index]
+            updateSong(indexedDB, actualList, editedSong)
+            
+            // saveToLocalStorage();
         }
         displayTasks();
     }
@@ -197,8 +193,11 @@ function editTask(index) {
     inputArtist.addEventListener("blur", function () {
         const updatedText = inputArtist.value.trim();
         if (updatedText) {
+
             todo[index].artist = updatedText;
-            saveToLocalStorage();
+            editedSong = todo[index] 
+            updateSong(indexedDB, actualList, editedSong)
+            // saveToLocalStorage();
         }
         displayTasks();
     });
@@ -207,25 +206,29 @@ function editTask(index) {
         const updatedText = inputName.value.trim();
         if (updatedText) {
             todo[index].song = updatedText;
-            saveToLocalStorage();
+            editedSong = todo[index]
+            updateSong(indexedDB, actualList, editedSong)
+            // saveToLocalStorage();
         }
         displayTasks();
     });
 }
 
-function toggleTask(index) {
+export function toggleTask(index) {
+
     todo[index].disabled = !todo[index].disabled;
-    saveToLocalStorage();
+    editedSong = todo[index]
+    updateSong(indexedDB, actualList, editedSong)
+
+    // saveToLocalStorage();
     displayTasks();
 }
 
-function deleteAllTasks() {
+export function deleteAllTasks() {
+
     todo = [];
     listTodos[actualList] = [];
-    saveToLocalStorage();
+    deleteAllSongs(indexedDB, actualList)
+    // saveToLocalStorage();
     displayTasks();
-}
-
-function saveToLocalStorage() {
-    localStorage.setItem("todo", JSON.stringify(todo));
 }
