@@ -1,7 +1,7 @@
 const staticCacheName = 'static-play-planner';
 const staticAssets = [
     './',
-    // './index.html',
+    './index.html',
     // './script.js',
     // './styles/styles.css',
 ];
