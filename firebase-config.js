@@ -18,7 +18,7 @@ let registration;
 if ('serviceWorker' in navigator) {
     try {
       registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
-    console.log('FCM service worker registered.')
+    console.log('FCM service worker registered.', registration)
     } catch (error) {
       console.log('FCM service worker registration failed.', error);
     }
