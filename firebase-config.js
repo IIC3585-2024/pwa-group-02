@@ -14,7 +14,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-const registration = await navigator.serviceWorker.ready;
+let registration;
+if ('serviceWorker' in navigator) {
+    try {
+      registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+    console.log('FCM service worker registered.')
+    } catch (error) {
+      console.log('FCM service worker registration failed.', error);
+    }
+  } else {
+    console.log('Service workers are not supported.');
+}
 
 function requestPermission() {
   Notification.requestPermission().then((permission) => {
@@ -44,6 +54,7 @@ function requestPermission() {
 requestPermission()
 
 onMessage(messaging, (payload) => {
+  console.log('Message received. ', payload);
   const notificationTitle = payload.notification.title;
   alert(notificationTitle);
 });
