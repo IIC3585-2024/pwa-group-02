@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     );
 
-    deleteButton.addEventListener("click", deleteAllSongs);
+    deleteButton.addEventListener("click", deleteAllSongsFromList);
     backButton.addEventListener("click", changeDisplayElements);
     newListButton.addEventListener("click", changeDisplayForNewList);
     
@@ -211,7 +211,7 @@ export function toggleSong(index) {
     displaySongs();
 }
 
-export function deleteAllSongs() {
+export function deleteAllSongsFromList() {
 
     todo = [];
     listTodos[actualList] = [];
