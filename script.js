@@ -27,11 +27,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    addSongListButton.addEventListener("click", getSongList);
+    addSongListButton.addEventListener("click", addSongList);
     songListInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
             event.preventDefault(); // Prevents default Enter key behavior
-            getSongList();
+            addSongList();
         }
     }
     );
@@ -60,7 +60,7 @@ export function changeDisplayElements() {
 
 }
 
-export function getSongList() {
+export function addSongList() {
     const listName = songListInput.value.trim();
     if (listName !== "") {
         if (getSongList(indexedDB, listName) === undefined) {
