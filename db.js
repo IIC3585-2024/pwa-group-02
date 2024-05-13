@@ -1,7 +1,7 @@
 // Código basado en: https://www.youtube.com/watch?v=VNFDoawcmNc&ab_channel=ChromeforDevelopers
 
 async function openDB(){
-    const db = indexedDB.open('db-lists', 1);
+    const db = window.indexedDB.open('db-lists', 1);
     if (!db.objectStoreNames.contains('song-lists')){
         let songListOS = db.createObjectStore('song-lists', {keyPath:'name'});
         songListOS.createIndex('name', 'name', {unique: true});
