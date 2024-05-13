@@ -1,11 +1,23 @@
+// Retrieve todo from local storage or initialize an empty array
+// localStorage.setItem("listTodos", JSON.stringify({}));
 import { openDB, createSongList, createSong, getSongList, updateSongList, deleteSongList, updateSong, deleteAllSongLists, deleteAllSongs } from "./db.js";
 
 const indexedDB = await openDB();
 
-const songInput = document.getElementById("todoInput");
-const songList = document.getElementById("todoList");
-const songCount = document.getElementById("todoCount");
-const songListName = document.getElementById("titleToDo");
+let listTodos = JSON.parse(localStorage.getItem("listTodos")) || {};
+let actualList = localStorage.getItem("actualList") || "";
+let todo;
+try {
+    todo = JSON.parse(localStorage.getItem("listTodos"))[actualList] || [];
+}
+catch (e) {
+    console.log(e);
+    todo = [];
+}
+const todoInput = document.getElementById("todoInput");
+const todoList = document.getElementById("todoList");
+const todoCount = document.getElementById("todoCount");
+const titleToDo = document.getElementById("titleToDo");
 
 const addButton = document.getElementById("addButton");
 const deleteButton = document.getElementById("deleteButton");
@@ -14,34 +26,35 @@ const artistButton = document.getElementById("artist");
 
 
 const newListButton = document.getElementById("newListButton");
-const songListInput = document.getElementById("listOfTodosInput");
-const addSongListButton = document.getElementById("addListOfTodosButton");
+const listOfTodosInput = document.getElementById("listOfTodosInput");
+const addListOfTodosButton = document.getElementById("addListOfTodosButton");
 
 
+// Initialize
 document.addEventListener("DOMContentLoaded", function () {
     addButton.addEventListener("click", addSong);
-    songInput.addEventListener("keydown", function (event) {
+    todoInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
             event.preventDefault(); // Prevents default Enter key behavior
             addSong();
         }
     });
 
-    addSongListButton.addEventListener("click", getSongList);
-    songListInput.addEventListener("keydown", function (event) {
+    addListOfTodosButton.addEventListener("click", addList);
+    listOfTodosInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
             event.preventDefault(); // Prevents default Enter key behavior
-            getSongList();
+            addList();
         }
     }
     );
 
-    deleteButton.addEventListener("click", deleteAllSongs);
+    deleteButton.addEventListener("click", deleteAllTasks);
     backButton.addEventListener("click", changeDisplayElements);
     newListButton.addEventListener("click", changeDisplayForNewList);
     
 
-    displaySongs();
+    displayTasks();
 });
 
 export function changeDisplayForNewList(){
@@ -60,27 +73,27 @@ export function changeDisplayElements() {
 
 }
 
-export function getSongList() {
-    const listName = songListInput.value.trim();
+export function addList() {
+    const listName = listOfTodosInput.value.trim();
     if (listName !== "") {
         if (getSongList(indexedDB, listName) === undefined) {
             createSongList(indexedDB, listName); 
         }
         actualList = listName;
         todo = getSongList(indexedDB, listName)
-        songListInput.value = "";
-        displaySongs();
+        listOfTodosInput.value = "";
+        displayTasks();
     }
 }
 
 
 export function addSong() {
-    const newSong = songInput.value.trim();
+    const newSong = todoInput.value.trim();
     if (newSong !== "") {
         let song = { song: newSong, disabled: false, artist: "", album: "" }
         createSong(indexedDB, actualList, song);
-        songInput.value = "";
-        displaySongs();
+        todoInput.value = "";
+        displayTasks();
     }
 }
 
@@ -91,7 +104,7 @@ export function vanishCreateListAndShowTodo(){
 }
 
 export function displayTodo(){
-    songList.innerHTML = "";
+    todoList.innerHTML = "";
     todo.forEach((item, index) => {
         const p = document.createElement("p");
         p.innerHTML = `
@@ -99,29 +112,29 @@ export function displayTodo(){
         <input type="checkbox" class="todo-checkbox" id="input-${index}" ${item.disabled ? "checked" : ""
             }>
         <p id="todo-${index}" class="${item.disabled ? "disabled" : ""
-            }" onclick="editSong(${index})">${item.song}</p>
+            }" onclick="editTask(${index})">${item.song}</p>
       </div>
     `;
         p.querySelector(".todo-checkbox").addEventListener("change", () =>
-            toggleSong(index)
+            toggleTask(index)
         );
-        songList.appendChild(p);
+        todoList.appendChild(p);
     });
 }
 
 
-export function displaySongs() {
+export function displayTasks() {
     todo = getSongList(indexedDB, listName);
-    songListName.textContent = actualList; // Display nombre como titulo
+    titleToDo.textContent = actualList; // Display nombre como titulo
     vanishCreateListAndShowTodo();
     displayTodo();
-    songCount.textContent = todo.length;
+    todoCount.textContent = todo.length;
 }
 
 
 
 
-export function editSong(index) {
+export function editTask(index) {
     document.getElementById("additional-info").style.display = "block";
     document.getElementById("scroll").style.display = "none";
     document.getElementById("backButton").style.display = "block";
@@ -173,7 +186,7 @@ export function editSong(index) {
             
             // saveToLocalStorage();
         }
-        displaySongs();
+        displayTasks();
     }
     );
 
@@ -186,7 +199,7 @@ export function editSong(index) {
             updateSong(indexedDB, actualList, editedSong)
             // saveToLocalStorage();
         }
-        displaySongs();
+        displayTasks();
     });
 
     inputName.addEventListener("blur", function () {
@@ -197,25 +210,25 @@ export function editSong(index) {
             updateSong(indexedDB, actualList, editedSong)
             // saveToLocalStorage();
         }
-        displaySongs();
+        displayTasks();
     });
 }
 
-export function toggleSong(index) {
+export function toggleTask(index) {
 
     todo[index].disabled = !todo[index].disabled;
     editedSong = todo[index]
     updateSong(indexedDB, actualList, editedSong)
 
     // saveToLocalStorage();
-    displaySongs();
+    displayTasks();
 }
 
-export function deleteAllSongs() {
+export function deleteAllTasks() {
 
     todo = [];
     listTodos[actualList] = [];
     deleteAllSongs(indexedDB, actualList)
     // saveToLocalStorage();
-    displaySongs();
+    displayTasks();
 }
