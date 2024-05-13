@@ -1,6 +1,6 @@
 // Retrieve todo from local storage or initialize an empty array
 // localStorage.setItem("listTodos", JSON.stringify({}));
-import { openDB, createSongList, createSong, getSongList, updateSongList, deleteSongList, updateSong, deleteAllSongLists, deleteAllSongs } from "db.js";
+import { openDB, createSongList, createSong, getSongList, updateSongList, deleteSongList, updateSong, deleteAllSongLists, deleteAllSongs } from "./back/db.js";
 
 let indexedDB = await openDB();
 
