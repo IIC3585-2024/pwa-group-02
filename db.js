@@ -4,7 +4,6 @@
 let db;
 
 async function openDB() {
-    return new Promise((resolve, reject) => {
         const request = window.indexedDB.open('db-lists', 1);
 
         request.onerror = function () {
@@ -14,30 +13,38 @@ async function openDB() {
 
         request.onsuccess = function () {
             db = request.result;
-            resolve(db);
         };
 
         request.onupgradeneeded = function (event) {
             db = event.target.result;
-            if (!db.objectStoreNames.contains('song-lists')) {
+            // if (!db.objectStoreNames.contains('song-lists')) {
                 const songListOS = db.createObjectStore('song-lists', { keyPath: 'id', autoIncrement: true });
                 songListOS.createIndex('name', 'name', { unique: true });
-            }
+            // }
         };
         
-    });
+        return new Promise((resolve, reject) => {
+            const interval = setInterval(() => {
+                if (db) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+        });
 }
 
-async function createSongList(name){
+function getDB(){
+    return db;
+}
+
+function createSongList(name){
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction.oncomplete(['song-lists'], 'readwrite');
+        const db = getDB();
+        const transaction = db.transaction(['song-lists'], 'readwrite');
         const store = transaction.objectStore('song-lists');
-        const request = store.index('name').get(name);
+        const request = store.add({ "name": name, "songs": [] });
+        
         request.onsuccess = function(){
-            if(requestWithIndex === undefined){
-                store.add({name: name, songs: []});
-                console.log('Added song list:' + name);
-            }
             
             resolve(request.result.name);
         }
@@ -48,18 +55,21 @@ async function createSongList(name){
 }
 
 async function createSong(listName, song){
-    return new Promise((resolve, reject) => {
+    
+    return await  new Promise((resolve, reject) => {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const store = transaction.objectStore('song-lists');
         const request = store.index('name').get(listName);
         request.onsuccess = function(){
+            
             if(request.result === undefined){
                 reject("Song list not found");
             }
             else{
-                request.result.songs.push(song);
+                const newList = request.result["songs"].push(song);
+                
                 store.put(request.result);
-                console.log('Added song:' + song + ' to list:' + listName);
                 resolve(song);
             }
         }
@@ -69,13 +79,16 @@ async function createSong(listName, song){
     });
 }
 
-async function getSongList(name){
-    new Promise((resolve, reject) => {
+function getSongList(name){
+    
+    return new Promise((resolve, reject) =>  {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readonly');
+
         const songListStore = transaction.objectStore('song-lists');
-        const request = songListStore.get(name);
+        const request = songListStore.index("name").get(name);
         request.onsuccess = function(){
-            resolve(request.result.name);
+            resolve(request.result);
         }
         request.onerror = function(){
             reject("Failed to get song list");
@@ -84,11 +97,13 @@ async function getSongList(name){
 }
 
 async function updateSongList(list){
-    new Promise((resolve, reject) => {
+    
+    return await new Promise((resolve, reject) => {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
-        const request = songListStore.get(list.name);
-        request.onsuccess = function(){
+        songListStore.onsuccess = function(){
+            const request = songListStore.index("name").get(listName);
             if(request.result === undefined){
                 reject("Song list not found");
             }
@@ -104,16 +119,18 @@ async function updateSongList(list){
 }
 
 async function updateSong(listName, song){
-    new Promise((resolve, reject) => {
+    
+    return await new Promise((resolve, reject) => {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
-        const request = songListStore.get(listName);
+        const request = songListStore.index("name").get(listName);
         request.onsuccess = function(){
             if(request.result === undefined){
                 reject("Song list not found");
             }
             else{
-                request.result.songs = request.result.songs.map(s => s.name === song.name ? song : s);
+                request.result["songs"] = request.result["songs"].map(s => s["name"] === song["name"] ? song : s);
                 songListStore.put(request.result);
                 resolve(song);
             }
@@ -125,10 +142,12 @@ async function updateSong(listName, song){
 }
 
 async function deleteSongList(name){
-    new Promise((resolve, reject) => {
+    
+    return await new Promise((resolve, reject) => {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
-        const request = songListStore.get(name);
+        const request = songListStore.index("name").get(name);
         request.onsuccess = function(){
             if(request.result === undefined){
                 reject("Song list not found");
@@ -145,10 +164,12 @@ async function deleteSongList(name){
 }
 
 async function deleteSong(listName, song){
-    new Promise((resolve, reject) => {
+    
+    return await new Promise((resolve, reject) => {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
-        const request = songListStore.get(listName);
+        const request = songListStore.index("name").get(listName);
         request.onsuccess = function(){
             if(request.result === undefined){
                 reject("Song list not found");
@@ -166,7 +187,9 @@ async function deleteSong(listName, song){
 }
 
 async function deleteAllSongLists(){
-    new Promise((resolve, reject) => {
+    
+    return await new Promise((resolve, reject) => {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
         songListStore.clear();
@@ -175,10 +198,12 @@ async function deleteAllSongLists(){
 }
 
 async function deleteAllSongs(listName){
-    new Promise((resolve, reject) => {
+    
+    return await new Promise((resolve, reject) => {
+        const db = getDB();
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
-        const songList = songListStore.get(listName);
+        const songList = songListStore.index("name").get(listName);
         songList.songs = [];
         songListStore.put(songList);
         return transaction.complete;
