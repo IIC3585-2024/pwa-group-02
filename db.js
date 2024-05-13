@@ -197,6 +197,27 @@ async function deleteAllSongLists(){
     });
 }
 
+
+
+// return await new Promise((resolve, reject) => {
+//     const db = getDB();
+//     const transaction = db.transaction(['song-lists'], 'readwrite');
+//     const songListStore = transaction.objectStore('song-lists');
+//     const request = songListStore.index("name").get(listName);
+//     request.onsuccess = function () {
+//         if (request.result === undefined) {
+//             reject("Song list not found");
+//         }
+//         else {
+//             request.result["songs"] = request.result["songs"].map(s => s["name"] === song["name"] ? song : s);
+//             songListStore.put(request.result);
+//             resolve(song);
+//         }
+//     }
+//     request.onerror = function () {
+//         reject("Failed to update song");
+//     }
+// });
 async function deleteAllSongs(listName){
     
     return await new Promise((resolve, reject) => {
@@ -204,9 +225,10 @@ async function deleteAllSongs(listName){
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
         const songList = songListStore.index("name").get(listName);
-        songList.songs = [];
-        songListStore.put(songList);
-        return transaction.complete;
+        songList.onsuccess = function () {
+            songList.result["songs"] = [];
+            songListStore.put(songList.result);
+        }
     });
 }
 

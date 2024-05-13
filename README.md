@@ -2,7 +2,7 @@
 Este es el repositorio de la tarea 3 del grupo 2 del curso IIC3585.
 
 ## ♦ Descripción de la aplicación
-Play planner es un aplicación similar a Anonynote que permite crear listas de canciones que quieres aprender. Creas una lista y luego puedes ir agregando canciones con su título. Luego, al hacer doble click, puedes entrar al detalle y modificar más aún sus propiedades como el artista o el album. También, Play Planner te notifica todos los días para que recuerdes practicar.
+Play planner es un aplicación similar a Anonynote que permite crear listas de canciones que quieres aprender. Creas una lista y luego puedes ir agregando canciones con su título. También, Play Planner te notifica todos los días para que recuerdes practicar.
 
 ## 💡 Cómo funciona y 📑 Features
 - Play Planner es una PWA que registra un service worker a partir del script `service-worker.js`

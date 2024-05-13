@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function changeDisplayForNewList(){
+    console.log()
     document.getElementById("listOfTodos").style.display = "flex";
     document.getElementById("todo").style.display = "none";
 }
@@ -72,7 +73,6 @@ async function addSongList() {
     if (listName !== "") {
         if (await getSongList(listName) === undefined) {
             const name = await createSongList(listName); 
-            console.log("lista creada:", name);
         }
         actualList = listName;
         
@@ -101,7 +101,6 @@ function vanishCreateListAndShowTodo(){
 
 async function displayTodo(){
     songList.innerHTML = "";
-    console.log(actualList);
     todo = await getSongList(actualList);
 
     let editSong =(index )=>{
@@ -154,7 +153,7 @@ async function displayTodo(){
                 editedSong = todo[index]
                 updateSong(actualList, editedSong)
 
-                // saveToLocalStorage();
+                
             }
             displaySongs();
         }
@@ -168,7 +167,7 @@ async function displayTodo(){
                 todo[index]["artist"] = updatedText;
                 editedSong = todo[index]
                 updateSong(actualList, editedSong)
-                // saveToLocalStorage();
+                
             }
             displaySongs();
         });
@@ -179,7 +178,7 @@ async function displayTodo(){
                 todo[index]["song"] = updatedText;
                 editedSong = todo[index]
                 updateSong(actualList, editedSong)
-                // saveToLocalStorage();
+                
             }
             displaySongs();
         });
@@ -213,7 +212,6 @@ async function displaySongs() {
         vanishCreateListAndShowTodo();
     }
     displayTodo();
-    songCount.textContent = todo.length;
 }
 
 
@@ -269,7 +267,7 @@ function editSong(index) {
             editedSong = todo[index]
             updateSong(actualList, editedSong)
             
-            // saveToLocalStorage();
+            
         }
         displaySongs();
     }
@@ -283,7 +281,7 @@ function editSong(index) {
             todo[index]["artist"] = updatedText;
             editedSong = todo[index] 
             updateSong(actualList, editedSong)
-            // saveToLocalStorage();
+            
         }
         displaySongs();
     });
@@ -294,7 +292,7 @@ function editSong(index) {
             todo[index]["song"] = updatedText;
             editedSong = todo[index]
             updateSong(actualList, editedSong)
-            // saveToLocalStorage();
+            
         }
         displaySongs();
     });
@@ -307,15 +305,13 @@ async function toggleSong(index) {
     let editedSong = todo[index]
     updateSong(actualList, editedSong)
 
-    // saveToLocalStorage();
-
     displaySongs();
 }
 
 function deleteAllSongsFromList() {
-
     todo = [];
     listTodos[actualList] = [];
     deleteAllSongs(actualList)
+    
     displaySongs();
 }
