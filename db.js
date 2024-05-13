@@ -1,24 +1,27 @@
 // Código basado en: https://www.youtube.com/watch?v=VNFDoawcmNc&ab_channel=ChromeforDevelopers
 
+async function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open('db-lists', 1);
 
+        request.onerror = function () {
+            console.error("Database failed to open");
+            reject("Failed to open database");
+        };
 
-async function openDB(){
-    let db;
-    const request = window.indexedDB.open('db-lists', 1);
+        request.onupgradeneeded = function (event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('song-lists')) {
+                const songListOS = db.createObjectStore('song-lists', { keyPath: 'name' });
+                songListOS.createIndex('name', 'name', { unique: true });
+            }
+        };
 
-    request.onerror = function () {
-        console.error("Database failed to open");
-    };
-
-    request.onsuccess = function () {
-        db = request.result;
-        if (!db.objectStoreNames.contains('song-lists')){
-            let songListOS = db.createObjectStore('song-lists', {keyPath:'name'});
-            songListOS.createIndex('name', 'name', {unique: true});
-        }
-    };
-    
-    return db;
+        request.onsuccess = function () {
+            const db = request.result;
+            resolve(db);
+        };
+    });
 }
 
 function createSongList(db, name){

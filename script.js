@@ -2,7 +2,7 @@
 // localStorage.setItem("listTodos", JSON.stringify({}));
 import { openDB, createSongList, createSong, getSongList, updateSongList, deleteSongList, updateSong, deleteAllSongLists, deleteAllSongs } from "./db.js";
 
-let indexedDB = openDB();
+const indexedDB = await openDB();
 
 let listTodos = JSON.parse(localStorage.getItem("listTodos")) || {};
 let actualList = localStorage.getItem("actualList") || "";
@@ -124,7 +124,7 @@ export function displayTodo(){
 
 
 export function displayTasks() {
-    todo = getSongList(indexedDB, listName)
+    todo = getSongList(indexedDB, listName);
     titleToDo.textContent = actualList; // Display nombre como titulo
     vanishCreateListAndShowTodo();
     displayTodo();
