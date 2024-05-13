@@ -17,7 +17,7 @@ const messaging = getMessaging(app);
 let registration;
 if ('serviceWorker' in navigator) {
     try {
-      registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+      registration = await navigator.serviceWorker.register('firebase-messaging-sw.js', { scope: './fcm-push-notification' });
     console.log('FCM service worker registered.', registration)
     } catch (error) {
       console.log('FCM service worker registration failed.', error);
