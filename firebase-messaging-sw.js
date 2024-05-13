@@ -17,9 +17,12 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
-// Commented due to double notification
-//   const notificationTitle = payload.notification.title;
-//   const notificationBody = payload.notification.body;
-//   self.registration.showNotification(notificationTitle,
-//     notificationOptions);
+// Comment below to disable possible double notification
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: payload.notification.icon,
+  };
+  self.registration.showNotification(notificationTitle,
+    notificationOptions);
 });
