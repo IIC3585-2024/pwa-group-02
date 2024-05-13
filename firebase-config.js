@@ -60,5 +60,6 @@ onMessage(messaging, (payload) => {
     body: payload.notification.body,
     icon: payload.notification.icon || './icons/manifest-icon-192.maskable.png',
   };
+  // https://developer.mozilla.org/en-US/docs/Web/API/Notification/Notification
   new Notification(notificationTitle, notificationOptions);
 });
