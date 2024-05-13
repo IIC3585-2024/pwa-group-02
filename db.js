@@ -33,8 +33,10 @@ async function createSongList(db, name){
         const request = store.index('name').get(name);
         request.onsuccess = function(){
             if(requestWithIndex === undefined){
-                const request = store.add({name: name, songs: []});
+                store.add({name: name, songs: []});
+                console.log('Added song list:' + name);
             }
+            
             resolve(request.result.name);
         }
         request.onerror = function(){
@@ -55,6 +57,7 @@ async function createSong(db, listName, song){
             else{
                 request.result.songs.push(song);
                 store.put(request.result);
+                console.log('Added song:' + song + ' to list:' + listName);
                 resolve(song);
             }
         }
