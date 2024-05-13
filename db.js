@@ -9,6 +9,11 @@ async function openDB() {
             reject("Failed to open database");
         };
 
+        request.onsuccess = function () {
+            const db = request.result;
+            resolve(db);
+        };
+
         request.onupgradeneeded = function (event) {
             const db = event.target.result;
             if (!db.objectStoreNames.contains('song-lists')) {
@@ -16,11 +21,7 @@ async function openDB() {
                 songListOS.createIndex('name', 'name', { unique: true });
             }
         };
-
-        request.onsuccess = function () {
-            const db = request.result;
-            resolve(db);
-        };
+        
     });
 }
 
