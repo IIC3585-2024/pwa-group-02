@@ -7,7 +7,7 @@ const staticAssets = [
     './index.html',
     './script.js',
     './styles/style.css',
-    './back/db.js',
+    './db.js',
 ];
 
 self.addEventListener('install', event => {
