@@ -14,11 +14,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
+const registration = await navigator.serviceWorker.ready;
+
 function requestPermission() {
   Notification.requestPermission().then((permission) => {
     if (permission === 'granted') {
       console.log('Notification permission granted.');
-      getToken(messaging, { vapidKey: 'BLIqYgESiSRF0HOVLi1UC5fxERL4vNTwuuPk07LGm3sghjL1tIToMwwEIfm786DbPrUwC7_hh73F63DAQBX2Un0' }).then((currentToken) => {
+      getToken(messaging, {
+        serviceWorkerRegistration: registration,
+        vapidKey: 'BLIqYgESiSRF0HOVLi1UC5fxERL4vNTwuuPk07LGm3sghjL1tIToMwwEIfm786DbPrUwC7_hh73F63DAQBX2Un0',
+      })
+      .then((currentToken) => {
         if (currentToken) {
           // Send the token to your server and update the UI if necessary
           console.log('current token for client: ', currentToken);
@@ -35,11 +41,7 @@ function requestPermission() {
   })
 }
 
-navigator.serviceWorker.register('./firebase-messaging-sw.js')
-.then((registration) => {
-  messaging.useServiceWorker(registration);
-  requestPermission();
-});
+requestPermission()
 
 onMessage(messaging, (payload) => {
   const notificationTitle = payload.notification.title;
