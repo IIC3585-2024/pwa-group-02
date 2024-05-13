@@ -1,4 +1,5 @@
-// Código basado en: https://www.youtube.com/watch?v=VNFDoawcmNc&ab_channel=ChromeforDevelopers
+// Código basado en: https://www.youtube.com/watch?v=VNFDoawcmNc&ab_channel=ChromeforDevelopers y https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
+
 
 async function openDB() {
     return new Promise((resolve, reject) => {
@@ -17,7 +18,7 @@ async function openDB() {
         request.onupgradeneeded = function (event) {
             const db = event.target.result;
             if (!db.objectStoreNames.contains('song-lists')) {
-                const songListOS = db.createObjectStore('song-lists', { keyPath: 'name' });
+                const songListOS = db.createObjectStore('song-lists', { keyPath: 'id', autoIncrement: true });
                 songListOS.createIndex('name', 'name', { unique: true });
             }
         };
@@ -25,74 +26,158 @@ async function openDB() {
     });
 }
 
-function createSongList(db, name){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const store = transaction.objectStore('song-lists');
-    store.add({name: name, songs: []});
-    return transaction.complete;
+async function createSongList(db, name){
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const store = transaction.objectStore('song-lists');
+        const request = store.index('name').get(name);
+        request.onsuccess = function(){
+            if(requestWithIndex === undefined){
+                const request = store.add({name: name, songs: []});
+            }
+            resolve(request.result.name);
+        }
+        request.onerror = function(){
+            reject("Failed to create song list");
+        }
+    });
 }
 
-function createSong(db, listName, song){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const songListStore = transaction.objectStore('song-lists');
-    const songList = songListStore.get(listName);
-    songList.songs.add(song);
-    return transaction.complete;
+async function createSong(db, listName, song){
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const store = transaction.objectStore('song-lists');
+        const request = store.index('name').get(listName);
+        request.onsuccess = function(){
+            if(request.result === undefined){
+                reject("Song list not found");
+            }
+            else{
+                request.result.songs.push(song);
+                store.put(request.result);
+                resolve(song);
+            }
+        }
+        request.onerror = function(){
+            reject("Failed to create song");
+        }
+    });
 }
 
-function getSongList(db, name){
-    console.log("Song list:", name);
-    const transaction = db.transaction(['song-lists'], 'readonly');
-    const songListStore = transaction.objectStore('song-lists');
-    return songListStore.get(name); 
+async function getSongList(db, name){
+    new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readonly');
+        const songListStore = transaction.objectStore('song-lists');
+        const request = songListStore.get(name);
+        request.onsuccess = function(){
+            resolve(request.result);
+        }
+        request.onerror = function(){
+            reject("Failed to get song list");
+        }
+    });
 }
 
-function updateSongList(db, list){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const songListStore = transaction.objectStore('song-lists');
-    songListStore.put(list);
-    return transaction.complete;
+async function updateSongList(db, list){
+    new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const songListStore = transaction.objectStore('song-lists');
+        const request = songListStore.get(list.name);
+        request.onsuccess = function(){
+            if(request.result === undefined){
+                reject("Song list not found");
+            }
+            else{
+                songListStore.put(list);
+                resolve(list);
+            }
+        }
+        request.onerror = function(){
+            reject("Failed to update song list");
+        }
+    });
 }
 
-function updateSong(db, listName, song){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const songListStore = transaction.objectStore('song-lists');
-    const songList = songListStore.get(listName);
-    songList.songs = songList.songs.map(s => s.name === song.name ? song : s);
-    songListStore.put(songList);
-    return transaction.complete;
+async function updateSong(db, listName, song){
+    new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const songListStore = transaction.objectStore('song-lists');
+        const request = songListStore.get(listName);
+        request.onsuccess = function(){
+            if(request.result === undefined){
+                reject("Song list not found");
+            }
+            else{
+                request.result.songs = request.result.songs.map(s => s.name === song.name ? song : s);
+                songListStore.put(request.result);
+                resolve(song);
+            }
+        }
+        request.onerror = function(){
+            reject("Failed to update song");
+        }
+    });
 }
 
-function deleteSongList(db, name){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const songListStore = transaction.objectStore('song-lists');
-    songListStore.delete(name);
-    return transaction.complete;
+async function deleteSongList(db, name){
+    new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const songListStore = transaction.objectStore('song-lists');
+        const request = songListStore.get(name);
+        request.onsuccess = function(){
+            if(request.result === undefined){
+                reject("Song list not found");
+            }
+            else{
+                songListStore.delete(name);
+                resolve(name);
+            }
+        }
+        request.onerror = function(){
+            reject("Failed to delete song list");
+        }
+    });
 }
 
-function deleteSong(db, listName, song){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const songListStore = transaction.objectStore('song-lists');
-    const songList = songListStore.get(listName);
-    songList.songs = songList.songs.filter(s => s.name !== song.name);
-    songListStore.put(songList);
-    return transaction.complete;
+async function deleteSong(db, listName, song){
+    new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const songListStore = transaction.objectStore('song-lists');
+        const request = songListStore.get(listName);
+        request.onsuccess = function(){
+            if(request.result === undefined){
+                reject("Song list not found");
+            }
+            else{
+                request.result.songs = request.result.songs.filter(s => s.name !== song.name);
+                songListStore.put(request.result);
+                resolve(song);
+            }
+        }
+        request.onerror = function(){
+            reject("Failed to delete song");
+        }
+    });
 }
 
-function deleteAllSongLists(db){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const songListStore = transaction.objectStore('song-lists');
-    songListStore.clear();
-    return transaction.complete;
+async function deleteAllSongLists(db){
+    new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const songListStore = transaction.objectStore('song-lists');
+        songListStore.clear();
+        resolve();
+    });
 }
 
-function deleteAllSongs(db, listName){
-    const transaction = db.transaction(['song-lists'], 'readwrite');
-    const songListStore = transaction.objectStore('song-lists');
-    const songList = songListStore.get(listName);
-    songList.songs = [];
-    songListStore.put(songList);
-    return transaction.complete;
+async function deleteAllSongs(db, listName){
+    new Promise((resolve, reject) => {
+        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const songListStore = transaction.objectStore('song-lists');
+        const songList = songListStore.get(listName);
+        songList.songs = [];
+        songListStore.put(songList);
+        return transaction.complete;
+    });
 }
 
 export { openDB, createSongList, createSong, getSongList, updateSongList, deleteSongList, updateSong, deleteSong, deleteAllSongLists, deleteAllSongs}
