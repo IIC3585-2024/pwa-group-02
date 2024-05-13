@@ -1,0 +1,47 @@
+{
+    "name": "Play Planner",
+    "short_name": "PlayPlanner",
+    "start_url": "/pwa-group-02/",
+    "icons": [
+        {
+          "src": "icons/manifest-icon-144.maskable.png",
+          "sizes": "144x144",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "icons/manifest-icon-144.maskable.png",
+          "sizes": "144x144",
+          "type": "image/png",
+          "purpose": "maskable"
+        },
+        {
+          "src": "icons/manifest-icon-192.maskable.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "icons/manifest-icon-192.maskable.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        },
+        {
+          "src": "icons/manifest-icon-512.maskable.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "icons/manifest-icon-512.maskable.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+    ],
+    "theme_color": "#000000",
+    "background_color": "#FFFFFF",
+    "display": "fullscreen",
+    "orientation": "portrait"
+}
