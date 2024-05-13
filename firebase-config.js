@@ -35,7 +35,11 @@ function requestPermission() {
   })
 }
 
-requestPermission();
+navigator.serviceWorker.register('./firebase-messaging-sw.js')
+.then((registration) => {
+  messaging.useServiceWorker(registration);
+  requestPermission();
+});
 
 onMessage(messaging, (payload) => {
   const notificationTitle = payload.notification.title;
