@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
-<!-- Sacado de https://www.youtube.com/watch?v=3OqWCGVaOkA y https://www.w3schools.com/howto/howto_css_switch.asp -->
+<!-- Código basado y esxtraído de https://www.youtube.com/watch?v=3OqWCGVaOkA y https://www.w3schools.com/howto/howto_css_switch.asp -->
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles/style.css" />
-    <script type="module" src="./script.js" ></script>
     <title>Play Planner</title>
     <link rel="manifest" href="/pwa-group-02/manifest.json">
 </head>
@@ -48,12 +47,14 @@
                 <p><span id="todoCount">0</span> items total</p>
                 <button id="backButton">Volver</button>
                 <button id="newListButton">Crear Nueva Lista</button>
-                <button id="deleteButton">Delete All</button>
+                <button id="deleteButton">Eliminar todos</button>
                 
 
             </div>
         </div>
     </section>
+
+    <script type="module" src="./script.js" ></script>
 
     <script>
         if ('serviceWorker' in navigator) {

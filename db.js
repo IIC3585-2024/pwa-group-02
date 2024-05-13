@@ -1,6 +1,8 @@
 // Código basado en: https://www.youtube.com/watch?v=VNFDoawcmNc&ab_channel=ChromeforDevelopers y https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
 
 
+let db;
+
 async function openDB() {
     return new Promise((resolve, reject) => {
         const request = window.indexedDB.open('db-lists', 1);
@@ -11,12 +13,12 @@ async function openDB() {
         };
 
         request.onsuccess = function () {
-            const db = request.result;
+            db = request.result;
             resolve(db);
         };
 
         request.onupgradeneeded = function (event) {
-            const db = event.target.result;
+            db = event.target.result;
             if (!db.objectStoreNames.contains('song-lists')) {
                 const songListOS = db.createObjectStore('song-lists', { keyPath: 'id', autoIncrement: true });
                 songListOS.createIndex('name', 'name', { unique: true });
@@ -26,9 +28,9 @@ async function openDB() {
     });
 }
 
-async function createSongList(db, name){
+async function createSongList(name){
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction(['song-lists'], 'readwrite');
+        const transaction = db.transaction.oncomplete(['song-lists'], 'readwrite');
         const store = transaction.objectStore('song-lists');
         const request = store.index('name').get(name);
         request.onsuccess = function(){
@@ -45,7 +47,7 @@ async function createSongList(db, name){
     });
 }
 
-async function createSong(db, listName, song){
+async function createSong(listName, song){
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const store = transaction.objectStore('song-lists');
@@ -67,13 +69,13 @@ async function createSong(db, listName, song){
     });
 }
 
-async function getSongList(db, name){
+async function getSongList(name){
     new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readonly');
         const songListStore = transaction.objectStore('song-lists');
         const request = songListStore.get(name);
         request.onsuccess = function(){
-            resolve(request.result);
+            resolve(request.result.name);
         }
         request.onerror = function(){
             reject("Failed to get song list");
@@ -81,7 +83,7 @@ async function getSongList(db, name){
     });
 }
 
-async function updateSongList(db, list){
+async function updateSongList(list){
     new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
@@ -101,7 +103,7 @@ async function updateSongList(db, list){
     });
 }
 
-async function updateSong(db, listName, song){
+async function updateSong(listName, song){
     new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
@@ -122,7 +124,7 @@ async function updateSong(db, listName, song){
     });
 }
 
-async function deleteSongList(db, name){
+async function deleteSongList(name){
     new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
@@ -142,7 +144,7 @@ async function deleteSongList(db, name){
     });
 }
 
-async function deleteSong(db, listName, song){
+async function deleteSong(listName, song){
     new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
@@ -163,7 +165,7 @@ async function deleteSong(db, listName, song){
     });
 }
 
-async function deleteAllSongLists(db){
+async function deleteAllSongLists(){
     new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');
@@ -172,7 +174,7 @@ async function deleteAllSongLists(db){
     });
 }
 
-async function deleteAllSongs(db, listName){
+async function deleteAllSongs(listName){
     new Promise((resolve, reject) => {
         const transaction = db.transaction(['song-lists'], 'readwrite');
         const songListStore = transaction.objectStore('song-lists');

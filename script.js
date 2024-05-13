@@ -1,6 +1,11 @@
 import { openDB, createSongList, createSong, getSongList, updateSongList, deleteSongList, updateSong, deleteAllSongLists, deleteAllSongs } from "./db.js";
 
-const indexedDB = await openDB();
+
+let listTodos = {};
+let actualList = "";
+let todo;
+
+openDB();
 
 const songInput = document.getElementById("todoInput");
 const songList = document.getElementById("todoList");
@@ -19,14 +24,7 @@ const addSongListButton = document.getElementById("addListOfTodosButton");
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    addButton.addEventListener("click", addSong);
-    songInput.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            event.preventDefault(); // Prevents default Enter key behavior
-            addSong();
-        }
-    });
-
+    changeDisplayForNewList();
     addSongListButton.addEventListener("click", addSongList);
     songListInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
@@ -35,6 +33,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     );
+    
+    addButton.addEventListener("click", addSong);
+    songInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevents default Enter key behavior
+            addSong();
+        }
+    });
 
     deleteButton.addEventListener("click", deleteAllSongsFromList);
     backButton.addEventListener("click", changeDisplayElements);
@@ -44,12 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
     displaySongs();
 });
 
-export function changeDisplayForNewList(){
+function changeDisplayForNewList(){
     document.getElementById("listOfTodos").style.display = "flex";
     document.getElementById("todo").style.display = "none";
 }
 
-export function changeDisplayElements() {
+function changeDisplayElements() {
     const displayElement = document.getElementById("additional-info");
     if (displayElement.style.display === "block") {
         displayElement.style.display = "none";
@@ -60,61 +66,68 @@ export function changeDisplayElements() {
 
 }
 
-export function addSongList() {
+function addSongList() {
     const listName = songListInput.value.trim();
     if (listName !== "") {
-        if (getSongList(indexedDB, listName) === undefined) {
-            createSongList(indexedDB, listName); 
+        if (getSongList(listName) === undefined) {
+            
+            createSongList(listName); 
         }
         actualList = listName;
-        console.log(listName);
-        todo = getSongList(indexedDB, listName)
+        
+        todo = getSongList(listName)
         songListInput.value = "";
         displaySongs();
     }
 }
 
 
-export function addSong() {
+function addSong() {
     const newSong = songInput.value.trim();
     if (newSong !== "") {
         let song = { song: newSong, disabled: false, artist: "", album: "" }
-        createSong(indexedDB, actualList, song);
+        createSong(actualList, song);
         songInput.value = "";
         displaySongs();
     }
 }
 
 
-export function vanishCreateListAndShowTodo(){
+function vanishCreateListAndShowTodo(){
     document.getElementById("listOfTodos").style.display = "none";
     document.getElementById("todo").style.display = "flex";
 }
 
-export function displayTodo(){
+function displayTodo(){
     songList.innerHTML = "";
-    todo.forEach((item, index) => {
-        const p = document.createElement("p");
-        p.innerHTML = `
-      <div class="todo-container">
-        <input type="checkbox" class="todo-checkbox" id="input-${index}" ${item.disabled ? "checked" : ""
-            }>
-        <p id="todo-${index}" class="${item.disabled ? "disabled" : ""
-            }" onclick="editSong(${index})">${item.song}</p>
-      </div>
-    `;
-        p.querySelector(".todo-checkbox").addEventListener("change", () =>
-            toggleSong(index)
-        );
-        songList.appendChild(p);
-    });
+    todo = getSongList(actualList);
+    if (todo.songs !== undefined) {
+        todo.songs.forEach((item, index) => {
+            const p = document.createElement("p");
+            p.innerHTML = `
+        <div class="todo-container">
+            <input type="checkbox" class="todo-checkbox" id="input-${index}" ${item.disabled ? "checked" : ""
+                }>
+            <p id="todo-${index}" class="${item.disabled ? "disabled" : ""
+                }" onclick="editSong(${index})">${item.song}</p>
+        </div>
+        `;
+            p.querySelector(".todo-checkbox").addEventListener("change", () =>
+                toggleSong(index)
+            );
+            songList.appendChild(p);
+        });
+    }
+    
 }
 
 
-export function displaySongs() {
-    todo = getSongList(indexedDB, listName);
+function displaySongs() {
+    todo = getSongList(actualList);
     songListName.textContent = actualList; // Display nombre como titulo
-    vanishCreateListAndShowTodo();
+    if (actualList !== "") {
+        vanishCreateListAndShowTodo();
+    }
     displayTodo();
     songCount.textContent = todo.length;
 }
@@ -122,7 +135,7 @@ export function displaySongs() {
 
 
 
-export function editSong(index) {
+function editSong(index) {
     document.getElementById("additional-info").style.display = "block";
     document.getElementById("scroll").style.display = "none";
     document.getElementById("backButton").style.display = "block";
@@ -170,7 +183,7 @@ export function editSong(index) {
             ///
             todo[index].album = updatedText;
             editedSong = todo[index]
-            updateSong(indexedDB, actualList, editedSong)
+            updateSong(actualList, editedSong)
             
             // saveToLocalStorage();
         }
@@ -184,7 +197,7 @@ export function editSong(index) {
 
             todo[index].artist = updatedText;
             editedSong = todo[index] 
-            updateSong(indexedDB, actualList, editedSong)
+            updateSong(actualList, editedSong)
             // saveToLocalStorage();
         }
         displaySongs();
@@ -195,28 +208,28 @@ export function editSong(index) {
         if (updatedText) {
             todo[index].song = updatedText;
             editedSong = todo[index]
-            updateSong(indexedDB, actualList, editedSong)
+            updateSong(actualList, editedSong)
             // saveToLocalStorage();
         }
         displaySongs();
     });
 }
 
-export function toggleSong(index) {
+function toggleSong(index) {
 
     todo[index].disabled = !todo[index].disabled;
     editedSong = todo[index]
-    updateSong(indexedDB, actualList, editedSong)
+    updateSong(actualList, editedSong)
 
     // saveToLocalStorage();
     displaySongs();
 }
 
-export function deleteAllSongsFromList() {
+function deleteAllSongsFromList() {
 
     todo = [];
     listTodos[actualList] = [];
-    deleteAllSongs(indexedDB, actualList)
+    deleteAllSongs(actualList)
     // saveToLocalStorage();
     displaySongs();
 }
