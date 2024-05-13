@@ -56,5 +56,9 @@ requestPermission()
 onMessage(messaging, (payload) => {
   console.log('Message received. ', payload);
   const notificationTitle = payload.notification.title;
-  alert(notificationTitle);
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: payload.notification.icon || './icons/manifest-icon-192.maskable.png',
+  };
+  new Notification(notificationTitle, notificationOptions);
 });
