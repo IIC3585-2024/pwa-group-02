@@ -67,6 +67,7 @@ export function addSongList() {
             createSongList(indexedDB, listName); 
         }
         actualList = listName;
+        console.log(listName);
         todo = getSongList(indexedDB, listName)
         songListInput.value = "";
         displaySongs();

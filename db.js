@@ -41,6 +41,7 @@ function createSong(db, listName, song){
 }
 
 function getSongList(db, name){
+    console.log("Song list:", name);
     const transaction = db.transaction(['song-lists'], 'readonly');
     const songListStore = transaction.objectStore('song-lists');
     return songListStore.get(name); 
