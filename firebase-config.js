@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js';
-import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-messaging.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-messaging.js';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAGyt81FMI3CyPNeMSzGIPiHBIShyVqgDE',
@@ -12,13 +12,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
 
 function requestPermission() {
-  console.log('Requesting permission...');
   Notification.requestPermission().then((permission) => {
     if (permission === 'granted') {
       console.log('Notification permission granted.');
-      const messaging = getMessaging(app);
       getToken(messaging, { vapidKey: 'BLIqYgESiSRF0HOVLi1UC5fxERL4vNTwuuPk07LGm3sghjL1tIToMwwEIfm786DbPrUwC7_hh73F63DAQBX2Un0' }).then((currentToken) => {
         if (currentToken) {
           // Send the token to your server and update the UI if necessary
@@ -37,3 +36,8 @@ function requestPermission() {
 }
 
 requestPermission();
+
+onMessage(messaging, (payload) => {
+  const notificationTitle = payload.notification.title;
+  alert(notificationTitle);
+});
